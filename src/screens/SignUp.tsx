@@ -4,7 +4,16 @@ import Logo from "@assets/logo.svg"
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 
+import { useNavigation } from "@react-navigation/native";
+
 export function SignUp(){
+  const navigation = useNavigation()
+
+  function handleGoBack(){
+    navigation.goBack();
+  }
+
+
   return (
     <ScrollView 
     contentContainerStyle={{flexGrow: 1}}
@@ -50,6 +59,7 @@ export function SignUp(){
           title='Voltar para o login' 
           variant='outline'
           mt='$12'
+          onPress={handleGoBack}
           />
           
         </VStack>

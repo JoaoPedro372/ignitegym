@@ -3,7 +3,7 @@ import { StatusBar } from 'react-native';
 import { useFonts, Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto';
 import { GluestackUIProvider } from '@gluestack-ui/themed';
 import { config } from './config/gluestack-ui.config';
-import { SignUp } from '@screens/SignUp';
+import { Routes } from '@routes/index';
 import { Loading } from '@components/Loading';
 
 export default function App() {
@@ -18,7 +18,7 @@ export default function App() {
           translucent
         />
         
-      {fontsLoaded ? <SignUp/> : <Loading/>}
+      {fontsLoaded ? <Routes/> : <Loading/>}
       
     </GluestackUIProvider>
   );
