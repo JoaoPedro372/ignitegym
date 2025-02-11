@@ -4,12 +4,18 @@ import Logo from "@assets/logo.svg"
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { useForm, Controller } from "react-hook-form";
-
 import { useNavigation } from "@react-navigation/native";
+
+type FormDataProps = {
+  name: string;
+  email: string;
+  password: string;
+  password_confirm: string;
+}
 
 export function SignUp(){
 
- const { control } = useForm();
+ const { control, handleSubmit } = useForm<FormDataProps>();
 
   const navigation = useNavigation()
 
@@ -17,8 +23,8 @@ export function SignUp(){
     navigation.goBack();
   }
 
-  function handleSignUp() {
-    
+  function handleSignUp({name, email, password, password_confirm}: FormDataProps) {
+    console.log({name, email, password, password_confirm});
   }
 
   return (
@@ -95,13 +101,15 @@ export function SignUp(){
                   secureTextEntry
                   onChangeText={onChange}
                   value={value}
+                  onSubmitEditing={handleSubmit(handleSignUp)}
+                  returnKeyType="send"
                 />
               )}
             />
 
             <Button 
               title='Criar e Acessar'
-              onPress={handleSignUp}
+              onPress={handleSubmit(handleSignUp)}
             />
           </Center>
 
