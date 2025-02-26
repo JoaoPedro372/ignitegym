@@ -1,12 +1,15 @@
-import { VStack, Image, Center, Text, Heading, ScrollView } from "@gluestack-ui/themed";
+import { VStack, Image, Center, Text, Heading, ScrollView, useToast } from "@gluestack-ui/themed";
 import BackgroundImg from '@assets/background.png';
 import Logo from "@assets/logo.svg"
+import { api } from "@services/api";
+import axios from "axios";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigation } from "@react-navigation/native";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { AppError } from "@utils/AppError";
 
 type FormDataProps = {
   name: string;
@@ -24,6 +27,8 @@ const signUpSchema = yup.object({
 
 export function SignUp(){
 
+  const toast = useToast();
+
  const { control, handleSubmit, formState: {errors} } = useForm<FormDataProps>({
   resolver: yupResolver(signUpSchema)
  });
@@ -35,18 +40,20 @@ export function SignUp(){
   }
 
   async function handleSignUp({name, email, password}: FormDataProps) {
-    const response = await fetch('http://192.168.1.131:3333/users', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ name, email, password })
-    })
 
-    const data = await response.json();
-    console.log(data);
-      
+    try {
+      const response = await api.post('/users', {name, email, password});
+      console.log(response.data);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const title = isAppError ? error.message : 'Não foi possível criar a conta, tente novamente mais tarde';
+
+      toast.show({
+        title,
+        placement: 'top',
+        bgColor: '$red500'
+      })
+    };
   }
 
   return (
