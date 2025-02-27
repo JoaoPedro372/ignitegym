@@ -1,4 +1,4 @@
-import { VStack, Image, Center, Text, Heading, ScrollView, useToast } from "@gluestack-ui/themed";
+import { VStack, Image, Center, Text, Heading, ScrollView, useToast, Toast } from "@gluestack-ui/themed";
 import BackgroundImg from '@assets/background.png';
 import Logo from "@assets/logo.svg"
 import { api } from "@services/api";
@@ -27,13 +27,12 @@ const signUpSchema = yup.object({
 
 export function SignUp(){
 
-  const toast = useToast();
-
  const { control, handleSubmit, formState: {errors} } = useForm<FormDataProps>({
   resolver: yupResolver(signUpSchema)
  });
 
-  const navigation = useNavigation()
+  const navigation = useNavigation();
+  const toast = useToast();
 
   function handleGoBack(){
     navigation.goBack();
@@ -47,12 +46,15 @@ export function SignUp(){
     } catch (error) {
       const isAppError = error instanceof AppError;
       const title = isAppError ? error.message : 'Não foi possível criar a conta, tente novamente mais tarde';
-
       toast.show({
-        title,
-        placement: 'top',
-        bgColor: '$red500'
-      })
+        id: "error-toast",
+        placement: "top",
+        render: ({ id }) => (
+          <Toast nativeID={id} action="error" variant="solid" bg="red.600">
+            <Text color="white">{title}</Text>
+          </Toast>
+        ),
+      });
     };
   }
 

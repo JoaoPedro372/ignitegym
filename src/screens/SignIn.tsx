@@ -1,4 +1,4 @@
-import { VStack, Image, Center, Text, Heading, ScrollView } from "@gluestack-ui/themed";
+import { VStack, Image, Center, Text, Heading, ScrollView, useToast, Toast } from "@gluestack-ui/themed";
 import BackgroundImg from '@assets/background.png';
 import Logo from "@assets/logo.svg"
 import { Input } from "@components/Input";
@@ -7,6 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import { AuthNavigatorRoutesProps } from '@routes/auth.routes'
 import { Controller, useForm } from 'react-hook-form';
 import { useAuth } from "@hooks/useAuth";
+import { AppError } from "@utils/AppError";
 
 type FormData = {
   email: string;
@@ -17,13 +18,30 @@ export function SignIn(){
   const { signIn } = useAuth();
   const navigation = useNavigation<AuthNavigatorRoutesProps>()
   const { control, handleSubmit, formState: { errors } } = useForm<FormData>()
+  const toast = useToast();
 
   function handleNewAccount(){
     navigation.navigate('signUp');
   }
 
-  function handleSignIn({ email, password }: FormData){
-    signIn(email, password);
+  async function handleSignIn({ email, password }: FormData){
+    try {
+      await signIn(email, password);
+    } catch (error) {
+      const isAppError = error instanceof AppError; 
+
+      const title = isAppError? error.message : 'Não foi possível fazer login, tente novamente mais tarde';
+      toast.show({
+        id: "error-toast", 
+        placement: "top", 
+        render: ({ id }) => (
+          <Toast nativeID={id} action="error" variant="solid" bg="red.600" mt="$10">
+            <Text color="white">{title}</Text>
+          </Toast>
+        ),
+      });
+    }
+    
   }
 
   return (

@@ -1,10 +1,11 @@
 import { UserDTO } from "@dtos/UserDTO";
 import { createContext, ReactNode, useState } from "react";
+import { api  } from "@services/api";
 
  
 export type AuthContextDataProps = {
     user: UserDTO
-    signIn: (email: string, password: string) => void;
+    signIn: (email: string, password: string) => Promise<void>;
 }
 
 type AuthContextProviderProps = {
@@ -15,21 +16,18 @@ type AuthContextProviderProps = {
 
  export function AuthContextProvider({children}: AuthContextProviderProps) {
 
-    const [user, setUser] = useState({
-        id: '1',
-        name: 'João Pedro França ',
-        email: 'jp.dovale@hotmail.com',
-        avatar: 'joao.png'
-      }
-    )
+    const [user, setUser] = useState<UserDTO>({} as UserDTO);
 
-    function signIn(email: string, password: string) {
-      setUser({
-        name: '',
-        id: '',
-        avatar: '',
-        email,
-      })
+    async function signIn(email: string, password: string) {
+      
+      try {
+        const { data } = await api.post('/sessions', { email, password })
+        if(data.user) {
+          setUser(data.user);
+        }
+      } catch (error) {
+        throw error;
+      }
     }
 
     return (
